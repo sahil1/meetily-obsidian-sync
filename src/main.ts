@@ -114,20 +114,6 @@ export default class MeetilySyncPlugin extends Plugin {
 				return;
 			}
 
-			const pluginDir = this.manifest.dir;
-			if (!pluginDir) {
-				this.setStatus("error");
-				new Notice("Meetily Sync: could not locate the plugin folder.");
-				return;
-			}
-			const wasmPath = normalizePath(`${pluginDir}/sql-wasm.wasm`);
-			if (!(await this.app.vault.adapter.exists(wasmPath))) {
-				this.setStatus("error");
-				new Notice("Meetily Sync: sql-wasm.wasm is missing from the plugin folder.");
-				return;
-			}
-			const wasmBinary = await this.app.vault.adapter.readBinary(wasmPath);
-
 			// Snapshot the DB bytes; the on-disk file Meetily owns is never touched.
 			// Meetily runs in WAL mode, so merge any committed -wal pages first,
 			// otherwise a meeting recorded seconds ago (still in the WAL) is invisible.
@@ -138,7 +124,7 @@ export default class MeetilySyncPlugin extends Plugin {
 				dbBytes = mergeWal(dbBytes, walBytes);
 			}
 
-			const db = await MeetilyDatabase.open(wasmBinary, dbBytes);
+			const db = await MeetilyDatabase.open(dbBytes);
 			try {
 				const meetings = db.getMeetings();
 				const exporter = new NoteExporter(this.app, this.settings);

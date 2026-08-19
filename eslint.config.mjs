@@ -7,7 +7,7 @@ export default tseslint.config(
 		ignores: ["main.js", "node_modules/", "tests/", "*.mjs", "*.cjs", "*.js"],
 	},
 	js.configs.recommended,
-	...tseslint.configs.recommended,
+	...tseslint.configs.recommendedTypeChecked,
 	...obsidianmd.configs.recommended,
 	{
 		languageOptions: {

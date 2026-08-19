@@ -4,6 +4,7 @@
 // the on-disk file that Meetily owns is never modified.
 
 import initSqlJs, { Database, SqlValue } from "sql.js";
+import wasmBinary from "sql.js/dist/sql-wasm.wasm";
 import { Meeting, TranscriptRow } from "./types";
 import { extractSummaryMarkdown } from "./format";
 
@@ -15,10 +16,12 @@ export class MeetilyDatabase {
 	}
 
 	/**
-	 * @param wasmBinary bytes of sql-wasm.wasm (shipped alongside the plugin)
-	 * @param dbBytes    a snapshot of meeting_minutes.sqlite
+	 * @param dbBytes a snapshot of meeting_minutes.sqlite
+	 *
+	 * The WebAssembly build of SQLite is embedded in the bundle (see the `.wasm`
+	 * import above), so there is no side-car file to locate at runtime.
 	 */
-	static async open(wasmBinary: ArrayBuffer, dbBytes: Uint8Array): Promise<MeetilyDatabase> {
+	static async open(dbBytes: Uint8Array): Promise<MeetilyDatabase> {
 		const SQL = await initSqlJs({ wasmBinary });
 		return new MeetilyDatabase(new SQL.Database(dbBytes));
 	}

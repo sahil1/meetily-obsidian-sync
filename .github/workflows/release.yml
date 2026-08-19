@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   build:
@@ -21,8 +23,16 @@ jobs:
 
       - name: Build
         run: |
-          npm install
+          npm ci
           npm run build
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
 
       - name: Create release
         env:
@@ -32,4 +42,4 @@ jobs:
           gh release create "$tag" \
             --title="$tag" \
             --generate-notes \
-            main.js manifest.json styles.css sql-wasm.wasm
+            main.js manifest.json styles.css

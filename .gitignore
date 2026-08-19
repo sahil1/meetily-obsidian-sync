@@ -1,11 +1,9 @@
 # build outputs (attached to GitHub releases, not committed to source)
 main.js
-sql-wasm.wasm
 *.js.map
 
 # dependencies
 node_modules/
-package-lock.json
 
 # obsidian test vault / local artifacts
 data.json

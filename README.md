@@ -50,11 +50,13 @@ Syncing is **idempotent**: meetings you have already exported are skipped, so yo
 
 ## Install
 
-1. Download `main.js`, `manifest.json`, `styles.css`, and `sql-wasm.wasm` from the [latest release](../../releases/latest).
-2. Copy all four into `<your vault>/.obsidian/plugins/meetily-sync/`.
-3. In Obsidian, open **Settings → Community plugins → Reload**, then enable **Meetily Sync**.
+**From Obsidian (recommended):** open **Settings → Community plugins → Browse**, search for **Meetily Sync**, install, and enable it.
 
-> `sql-wasm.wasm` must sit next to `main.js` — the plugin loads it at runtime to read the database.
+**Manually from a release:**
+
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](../../releases/latest).
+2. Copy all three into `<your vault>/.obsidian/plugins/meetily-sync/`.
+3. In Obsidian, open **Settings → Community plugins → Reload**, then enable **Meetily Sync**.
 
 ## Usage
 
@@ -90,7 +92,7 @@ Pattern variables: `{title}`, `{date}`, `{time}`, `{year}`, `{month}`, `{day}`, 
 
 ## How it works
 
-The plugin opens Meetily's SQLite database with [sql.js](https://github.com/sql-js/sql.js) (SQLite compiled to WebAssembly), so there are no native modules to build or trust. It loads the database as an **in-memory snapshot** — Meetily's file is only ever read, never modified — and maps the `meetings`, `transcripts`, and `summary_processes` tables into Markdown.
+The plugin opens Meetily's SQLite database with [sql.js](https://github.com/sql-js/sql.js) (SQLite compiled to WebAssembly), so there are no native modules to build or trust. The WebAssembly binary is embedded in the plugin, so there is nothing extra to place on disk. It loads the database as an **in-memory snapshot** — Meetily's file is only ever read, never modified — and maps the `meetings`, `transcripts`, and `summary_processes` tables into Markdown.
 
 Meetily runs its database in WAL (write-ahead log) mode, which means a meeting can be committed to a side file before it is folded into the main database. Meetily Sync merges those committed pages when it reads, so a meeting you recorded moments ago appears right away, even while Meetily is still open.
 
@@ -114,20 +116,20 @@ Because it reads a local file, the plugin is marked `isDesktopOnly` and does not
 
 To install a build by hand:
 
-1. `npm run build` — produces `main.js` and `sql-wasm.wasm`.
+1. `npm run build` — produces `main.js` (with the SQLite WebAssembly embedded).
 2. Create `<vault>/.obsidian/plugins/meetily-sync/`.
-3. Copy in `main.js`, `manifest.json`, `styles.css`, and `sql-wasm.wasm`.
+3. Copy in `main.js`, `manifest.json`, and `styles.css`.
 4. In Obsidian: **Settings → Community plugins → Reload**, then enable **Meetily Sync**.
 
 ```bash
 DEST="/path/to/YourVault/.obsidian/plugins/meetily-sync"
 mkdir -p "$DEST"
-cp main.js manifest.json styles.css sql-wasm.wasm "$DEST"/
+cp main.js manifest.json styles.css "$DEST"/
 ```
 
 ## Releasing
 
-Releases are automated by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a tag builds the plugin and attaches `main.js`, `manifest.json`, `styles.css`, and `sql-wasm.wasm` to a GitHub Release.
+Releases are automated by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a tag builds the plugin, attaches `main.js`, `manifest.json`, and `styles.css` to a GitHub Release, and records build-provenance attestations for those assets.
 
 ```bash
 npm version patch        # bumps manifest.json + versions.json
@@ -138,21 +140,7 @@ The tag must equal the version in `manifest.json` (no `v` prefix), which `npm ve
 
 ## Publishing to the Obsidian community store
 
-One-time submission, after at least one GitHub Release exists:
-
-1. Confirm `main` has a green build, a tagged release with the four assets, a README, and a LICENSE.
-2. Fork [`obsidianmd/obsidian-releases`](https://github.com/obsidianmd/obsidian-releases).
-3. Add an entry to `community-plugins.json`:
-   ```json
-   {
-     "id": "meetily-sync",
-     "name": "Meetily Sync",
-     "author": "sahil1",
-     "description": "Sync summaries and transcripts from your local Meetily meeting recorder into your vault.",
-     "repo": "sahil1/meetily-obsidian-sync"
-   }
-   ```
-4. Open a PR. An automated bot runs checks (the same `eslint-plugin-obsidianmd` rules this repo lints against) and a maintainer reviews. Once merged, the plugin appears in the in-app store, and every later GitHub Release is picked up automatically.
+Meetily Sync is listed in the Obsidian community store. New plugins are submitted through the plugin portal at [community.obsidian.md](https://community.obsidian.md) (sign in, link the GitHub account, and add the repository); the older pull-request flow against `obsidian-releases` has been retired. Once a plugin is listed, every later GitHub Release is picked up automatically, and Obsidian runs an automated scorecard scan on each release.
 
 ## Development
 
