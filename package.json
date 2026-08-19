@@ -1,0 +1,43 @@
+{
+	"name": "meetily-sync",
+	"version": "0.2.1",
+	"description": "Sync summaries and transcripts from your local Meetily meeting recorder into your Obsidian vault.",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "npm run lint && tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
+		"test": "jest",
+		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"keywords": [
+		"obsidian",
+		"obsidian-plugin",
+		"meetily",
+		"meeting-notes",
+		"transcription",
+		"local-first"
+	],
+	"author": "sahil1",
+	"license": "MIT",
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@types/jest": "^30.0.0",
+		"@types/node": "^20.11.0",
+		"@types/sql.js": "^1.4.9",
+		"builtin-modules": "^3.3.0",
+		"esbuild": "0.20.1",
+		"eslint": "^10.8.1",
+		"eslint-plugin-obsidianmd": "^0.4.1",
+		"jest": "^30.4.2",
+		"obsidian": "latest",
+		"ts-jest": "^29.4.12",
+		"tslib": "2.6.2",
+		"typescript": "5.4.5",
+		"typescript-eslint": "^8.67.0"
+	},
+	"dependencies": {
+		"sql.js": "^1.10.3"
+	}
+}

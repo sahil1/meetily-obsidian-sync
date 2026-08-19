@@ -1,0 +1,10 @@
+{
+	"id": "meetily-sync",
+	"name": "Meetily Sync",
+	"version": "0.2.1",
+	"minAppVersion": "1.5.0",
+	"description": "Sync summaries and transcripts from your local Meetily meeting recorder into your vault. Fully on-device, no cloud.",
+	"author": "sahil1",
+	"authorUrl": "https://github.com/sahil1",
+	"isDesktopOnly": true
+}
