@@ -12,9 +12,13 @@ export default class MeetilySyncPlugin extends Plugin {
 	settings: MeetilySyncSettings;
 	private intervalId: number | null = null;
 	private syncing = false;
+	private statusBar: HTMLElement | null = null;
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
+
+		this.statusBar = this.addStatusBarItem();
+		this.setStatus("idle");
 
 		this.addSettingTab(new MeetilySettingTab(this.app, this));
 
@@ -69,6 +73,11 @@ export default class MeetilySyncPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
+	/** Update the status bar indicator (quieter than a Notice for background syncs). */
+	private setStatus(text: string): void {
+		this.statusBar?.setText(`Meetily: ${text}`);
+	}
+
 	/** (Re)configure the auto-sync timer from current settings. */
 	setupAutoSync(): void {
 		if (this.intervalId !== null) {
@@ -96,20 +105,24 @@ export default class MeetilySyncPlugin extends Plugin {
 			return;
 		}
 		this.syncing = true;
+		this.setStatus("syncing…");
 		try {
 			const dbPath = this.settings.dbPath || defaultDbPath();
 			if (!fs.existsSync(dbPath)) {
+				this.setStatus("database not found");
 				new Notice(`Meetily Sync: database not found at\n${dbPath}`);
 				return;
 			}
 
 			const pluginDir = this.manifest.dir;
 			if (!pluginDir) {
+				this.setStatus("error");
 				new Notice("Meetily Sync: could not locate the plugin folder.");
 				return;
 			}
 			const wasmPath = normalizePath(`${pluginDir}/sql-wasm.wasm`);
 			if (!(await this.app.vault.adapter.exists(wasmPath))) {
+				this.setStatus("error");
 				new Notice("Meetily Sync: sql-wasm.wasm is missing from the plugin folder.");
 				return;
 			}
@@ -140,6 +153,7 @@ export default class MeetilySyncPlugin extends Plugin {
 				this.settings.lastSyncedAt = new Date().toISOString();
 				await this.saveSettings();
 
+				this.setStatus(written > 0 ? `${written} new` : "up to date");
 				if (!silent || written > 0) {
 					new Notice(`Meetily Sync: exported ${written} of ${meetings.length} meeting(s).`);
 				}
@@ -148,6 +162,7 @@ export default class MeetilySyncPlugin extends Plugin {
 			}
 		} catch (err) {
 			console.error("Meetily Sync failed", err);
+			this.setStatus("sync failed");
 			new Notice(`Meetily Sync failed: ${err instanceof Error ? err.message : String(err)}`);
 		} finally {
 			this.syncing = false;

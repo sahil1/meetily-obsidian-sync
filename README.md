@@ -90,6 +90,17 @@ The plugin opens Meetily's SQLite database with [sql.js](https://github.com/sql-
 
 Meetily runs its database in WAL (write-ahead log) mode, which means a meeting can be committed to a side file before it is folded into the main database. Meetily Sync merges those committed pages when it reads, so a meeting you recorded moments ago appears right away, even while Meetily is still open.
 
+## Filesystem and network use
+
+Meetily Sync is transparent about what it touches:
+
+- **Network:** none. The plugin makes no network requests — no API calls, telemetry, analytics, or third-party services. It has no network code paths at all.
+- **Files read outside the vault (read-only):** exactly two — Meetily's `meeting_minutes.sqlite` and its `-wal` sidecar (see paths under [Settings](#settings)). They are read via Node's `fs` and **never written, deleted, or modified**. You can override the location in **Advanced → Meetily database location**.
+- **Files written:** only Markdown notes inside your vault, in the folders you configure, through Obsidian's Vault API.
+- **Background activity:** none unless you opt in. **Sync on startup** runs one sync after Obsidian loads; **Auto-sync on a timer** uses `setInterval` at the interval you choose. Both are off by default and can be turned off at any time.
+
+Because it reads a local file, the plugin is marked `isDesktopOnly` and does not run on mobile.
+
 ## Limitations
 
 - **Desktop only.** It reads a local file, so it does not run on Obsidian mobile.
@@ -156,6 +167,12 @@ ln -s "$(pwd)" "/path/to/TestVault/.obsidian/plugins/meetily-sync"
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more.
+
+## Support
+
+If Meetily Sync saves you time, you can support development here:
+
+<a href="https://buymeacoffee.com/m_sahil"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a>
 
 ## License
 

@@ -1,6 +1,6 @@
 {
 	"name": "meetily-sync",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"description": "Sync summaries and transcripts from your local Meetily meeting recorder into your Obsidian vault.",
 	"main": "main.js",
 	"scripts": {
