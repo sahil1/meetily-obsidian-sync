@@ -1,7 +1,5 @@
 # Meetily Sync
 
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-ffdd00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/m_sahil)
-
 Sync your [Meetily](https://meetily.ai) meeting summaries and transcripts into [Obsidian](https://obsidian.md) as clean, linked Markdown. Fully on-device: no cloud service, no API keys, no meeting bots.
 
 ![Obsidian Plugin](https://img.shields.io/badge/Obsidian-Plugin-7c3aed) ![Version](https://img.shields.io/github/v/release/sahil1/meetily-obsidian-sync?label=version&color=2563eb&sort=semver) ![License](https://img.shields.io/badge/license-MIT-16a34a)
