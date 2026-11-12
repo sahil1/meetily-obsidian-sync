@@ -85,13 +85,19 @@ describe("meetingUuid", () => {
 });
 
 describe("extractSummaryMarkdown", () => {
-	it("prefers english_cache.markdown", () => {
-		const blob = JSON.stringify({ english_cache: { markdown: "# Hello" }, markdown: "fallback" });
+	it("prefers top-level markdown (original meeting language)", () => {
+		const blob = JSON.stringify({ markdown: "# Bonjour", english_cache: { markdown: "# Hello" } });
+		expect(extractSummaryMarkdown(blob)).toBe("# Bonjour");
+	});
+
+	it("falls back to english_cache when top-level markdown is missing", () => {
+		const blob = JSON.stringify({ english_cache: { markdown: "# Hello" } });
 		expect(extractSummaryMarkdown(blob)).toBe("# Hello");
 	});
 
-	it("falls back to top-level markdown", () => {
-		expect(extractSummaryMarkdown(JSON.stringify({ markdown: "# Top" }))).toBe("# Top");
+	it("falls back to english_cache when top-level markdown is empty", () => {
+		const blob = JSON.stringify({ markdown: "   ", english_cache: { markdown: "# Hello" } });
+		expect(extractSummaryMarkdown(blob)).toBe("# Hello");
 	});
 
 	it("returns raw text when not JSON", () => {

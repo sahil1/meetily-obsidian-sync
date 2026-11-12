@@ -9,12 +9,13 @@ export function extractSummaryMarkdown(resultText: string | null | undefined): s
 	try {
 		const data: unknown = JSON.parse(resultText);
 		if (data && typeof data === "object") {
-			const ec = (data as Record<string, unknown>).english_cache;
-			if (ec && typeof ec === "object" && (ec as Record<string, unknown>).markdown) {
-				return String((ec as Record<string, unknown>).markdown).trim();
+			const rec = data as Record<string, unknown>;
+			if (typeof rec.markdown === "string" && rec.markdown.trim().length > 0) {
+				return rec.markdown.trim();
 			}
-			if ((data as Record<string, unknown>).markdown) {
-				return String((data as Record<string, unknown>).markdown).trim();
+			const ec = rec.english_cache;
+			if (ec && typeof ec === "object" && typeof (ec as Record<string, unknown>).markdown === "string") {
+				return ((ec as Record<string, unknown>).markdown as string).trim();
 			}
 		}
 		return String(data).trim();
